@@ -85,7 +85,7 @@ implementation:
       dependencies:
       - python=3.6.8
       - pip:
-        - azureml-designer-core==0.0.25
+        - azureml-designer-core==0.0.26
         - fire==0.1.3
         - git+https://github.com/chjinche/CustomModules-1.git@master#subdirectory=azureml-custom-module-examples/image-classification
     command:
