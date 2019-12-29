@@ -5,7 +5,7 @@ from azureml.studio.core.io.image_directory import ImageDirectory
 # from azureml.studio.core.io.image_directory import FolderBasedImageDirectory
 
 
-def entrance(input_path='/mnt/chjinche/test_data/',
+def entrance(input_path='/mnt/chjinche/test_data/tar_file/',
              output_path='/mnt/chjinche/test_data/image_dir/'):
     logger.info('Start!')
     # Case 1: input path is torchvision ImageFolder
@@ -14,6 +14,7 @@ def entrance(input_path='/mnt/chjinche/test_data/',
     compressed_extensions = {'.tar', '.zip'}
     compressed_path = None
     for path in Path(input_path).glob(r'**/*'):
+        print(path)
         if path.suffix in compressed_extensions:
             compressed_path = path
 
