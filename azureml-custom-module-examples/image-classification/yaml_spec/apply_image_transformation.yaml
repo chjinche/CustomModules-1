@@ -1,6 +1,6 @@
 name: Apply Image Transformation
 id: 5e968de0-d172-4526-a319-0d8ca5bd4eb6
-version: 0.0.1.11
+version: 0.0.1.15
 category: Image Classification
 description: Transform input image with input transform.
 inputs:
@@ -12,12 +12,12 @@ inputs:
   type: ImageDirectory
   port: True
   description: Input image directory.
-- name: Transform type
+- name: Mode
   type: Mode
-  description: Transform type.
+  description: Should exclude 'Random' transforms in testing but keep them in training.
   options:
-    - 'Train'
-    - 'Test'
+    - 'For training'
+    - 'For testing'
 outputs:
 - name: Output image directory
   type: ImageDirectory
@@ -32,7 +32,7 @@ implementation:
       - python=3.6.8
       - pip:
         - azureml-defaults
-        - azureml-designer-core[image]==0.0.25.post8015897
+        - azureml-designer-core[image]==0.0.26.post8570658
         - torchvision==0.4.1
         - fire==0.1.3
         - git+https://github.com/chjinche/CustomModules-1.git@master#subdirectory=azureml-custom-module-examples/image-classification
@@ -45,11 +45,11 @@ implementation:
     - inputValue: Input image transformation
     - --input-image-path
     - inputValue: Input image directory
-    - --transform-type
-    - inputValue: Transform type
+    - --mode
+    - inputValue: Mode
     - --output-path
     - outputPath: Output image directory
   invoking:
     module: imageclassification.apply_image_transformation
-    class: ApplyImageTransform
+    class: ApplyImageTransformation
     func: apply
