@@ -54,7 +54,7 @@ implementation:
       - python=3.6.8
       - pip:
         - azureml-defaults
-        - azureml-designer-core[image]==0.0.26.post8570658
+        - azureml-designer-core[image]==0.0.26.post8573387
         - azureml-designer-model==0.1.20191209.4
         - torch==1.3
         - torchvision==0.4.1
