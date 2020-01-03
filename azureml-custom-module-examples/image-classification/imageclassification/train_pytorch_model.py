@@ -66,7 +66,7 @@ def entrance(input_model_path='/mnt/chjinche/test_data/init_model',
             ]
         }]
     }
-    save_pytorch_state_dict_model(model.model,
+    save_pytorch_state_dict_model(model,
                                   init_params=model_config,
                                   path=save_model_path,
                                   task_type=TaskType.MultiClassification,
