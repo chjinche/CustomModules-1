@@ -44,7 +44,7 @@ def entrance(input_model_path='/mnt/chjinche/test_data/init_model',
     logger.info(f'Model_config: {model_config}.')
     model = model_class(**model_config)
     logger.info("Built model. Start training.")
-    model.train(train_set=train_set,
+    model.fit(train_set=train_set,
                 valid_set=valid_set,
                 epochs=epochs,
                 batch_size=batch_size,
