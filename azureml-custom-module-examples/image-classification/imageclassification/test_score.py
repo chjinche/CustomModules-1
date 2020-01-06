@@ -4,18 +4,18 @@ import torch
 import torch.nn as nn
 from torchvision import transforms
 # from .densenet import DenseNet
-from .utils import logger
+# from .utils import logger
 
 
 if __name__ == '__main__':
     # Test inference
     print("Testing inference.")
     loaded_generic_model = load_generic_model(
-        path='/mnt/chjinche/projects/saved_model')
-    model = loaded_generic_model.raw_model
+        path='/mnt/chjinche/test_data/saved_model_classification')
+    # model = loaded_generic_model.raw_model
     # # check predict before save
     # state_dict = model.state_dict()
-    loader_dir = ImageDirectory.load('/mnt/chjinche/data/out_transform_test/')
+    loader_dir = ImageDirectory.load('/mnt/chjinche/test_data/transform_test/')
     # to_tensor_transform = transforms.Compose([transforms.ToTensor()])
     # model_config = {
     #     'model_type': 'densenet201',
@@ -42,6 +42,6 @@ if __name__ == '__main__':
     #         pred_probs = softmax(output).cpu().numpy()[0]
     #         logger.info(f'pred_probs {pred_probs}')
     # loader_dir = ImageDirectory.load('/mnt/chjinche/data/output_transformed_test/')
-    # result_dfd = loaded_generic_model.predict(loader_dir.iter_images())
-    result_dfd = model(loader_dir.iter_images())
+    result_dfd = loaded_generic_model.predict(loader_dir.iter_images())
+    # result_dfd = model(loader_dir.iter_images())
     print(f'result_dfd: {result_dfd}')

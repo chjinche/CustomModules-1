@@ -11,15 +11,16 @@ from . import modellib
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 
 
-def entrance(input_model_path='/mnt/chjinche/test_data/init_model',
-             train_data_path='/mnt/chjinche/test_data/transform_test/',
-             valid_data_path='/mnt/chjinche/test_data/transform_test/',
-             save_model_path='/mnt/chjinche/test_data/saved_model',
-             epochs=1,
-             batch_size=16,
-             learning_rate=0.001,
-             random_seed=231,
-             patience=2):
+def entrance(
+        input_model_path='/mnt/chjinche/test_data/init_model_classification',
+        train_data_path='/mnt/chjinche/test_data/transform_test/',
+        valid_data_path='/mnt/chjinche/test_data/transform_test/',
+        save_model_path='/mnt/chjinche/test_data/saved_model_classification',
+        epochs=1,
+        batch_size=16,
+        learning_rate=0.001,
+        random_seed=231,
+        patience=2):
     logger.info("Start training.")
     logger.info(f"data path: {train_data_path}")
     logger.info(f"data path: {valid_data_path}")
@@ -45,12 +46,12 @@ def entrance(input_model_path='/mnt/chjinche/test_data/init_model',
     model = model_class(**model_config)
     logger.info("Built model. Start training.")
     model.fit(train_set=train_set,
-                valid_set=valid_set,
-                epochs=epochs,
-                batch_size=batch_size,
-                lr=learning_rate,
-                random_seed=random_seed,
-                patience=patience)
+              valid_set=valid_set,
+              epochs=epochs,
+              batch_size=batch_size,
+              lr=learning_rate,
+              random_seed=random_seed,
+              patience=patience)
     # Save model file, configs and install dependencies
     # TODO: designer.model could support pathlib.Path
     # local_dependencies = [str(Path(__file__).parent.parent)]
