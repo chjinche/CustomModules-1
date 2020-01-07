@@ -38,7 +38,7 @@ class BaseNet(nn.Module):
         out = self.model(x)
         return out
 
-    def train_epoch(self, loader, optimizer, epoch, epochs, print_freq=1):
+    def train_one_epoch(self, loader, optimizer, epoch, epochs, print_freq=1):
         batch_time = AverageMeter()
         losses = AverageMeter()
         error = AverageMeter()
@@ -80,16 +80,16 @@ class BaseNet(nn.Module):
         # Return summary statistics
         return batch_time.avg, losses.avg, error.avg
 
-    def train(self,
-              train_set,
-              valid_set,
-              epochs,
-              batch_size,
-              lr=0.001,
-              wd=0.0001,
-              momentum=0.9,
-              random_seed=None,
-              patience=10):
+    def fit(self,
+            train_set,
+            valid_set,
+            epochs,
+            batch_size,
+            lr=0.001,
+            wd=0.0001,
+            momentum=0.9,
+            random_seed=None,
+            patience=10):
         logger.info('Torch cuda random seed setting.')
         # Torch cuda random seed setting
         if random_seed is not None:
@@ -132,11 +132,11 @@ class BaseNet(nn.Module):
         best_error = 1
         counter = 0
         for epoch in range(epochs):
-            _, train_loss, train_error = self.train_epoch(
-                                                     loader=train_loader,
-                                                     optimizer=optimizer,
-                                                     epoch=epoch,
-                                                     epochs=epochs)
+            _, train_loss, train_error = self.train_one_epoch(
+                loader=train_loader,
+                optimizer=optimizer,
+                epoch=epoch,
+                epochs=epochs)
             scheduler.step(epoch=epoch)
             _, valid_loss, valid_error, _ = evaluate(model=self.model,
                                                      loader=valid_loader)

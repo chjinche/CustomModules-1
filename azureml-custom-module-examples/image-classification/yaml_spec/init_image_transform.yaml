@@ -1,6 +1,6 @@
 name: Init Image Transformation
 id: 5e968de0-d172-4526-a319-0d8ca5bd4eb6
-version: 0.0.1.2
+version: 0.0.1.3
 category: Image Classification
 description: Initialize image transformation.
 inputs:

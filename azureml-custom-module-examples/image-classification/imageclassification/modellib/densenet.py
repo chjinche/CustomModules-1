@@ -18,7 +18,7 @@ class DenseNet(BaseNet):
             self.model.classifier = nn.Linear(num_final_in, num_classes)
 
 
-def entrance(save_model_path='../init_model',
+def entrance(save_model_path='/mnt/chjinche/test_data/init_model_classification',
              model_type='densenet201',
              pretrained=True,
              memory_efficient=False):

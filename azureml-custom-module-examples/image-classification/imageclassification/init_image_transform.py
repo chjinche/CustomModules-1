@@ -20,7 +20,7 @@ def entrance(resize_size=256,
              random_perspective=False,
              random_erasing=False,
              normalize=True,
-             output_path='../init_transform/'):
+             output_path='/mnt/chjinche/test_data/init_transform/'):
     # Construct image transform
     # TODO: check transforms ordering
     img_trans_dir = ImageTransformationDirectory.create(
