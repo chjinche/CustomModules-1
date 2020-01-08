@@ -85,7 +85,7 @@ def entrance(input_model_path='/mnt/chjinche/test_data/detection/init_model',
                     "fire==0.1.3",
                     "pycocotools==2.0.0",
                     "git+https://github.com/microsoft/ComputerVision.git@master#egg=utils_cv",
-                    "git+https://github.com/StudioCommunity/CustomModules-1.git@master#subdirectory=azureml-custom-module-examples/pytorch-modules",
+                    "git+https://github.com/chjinche/CustomModules-1.git@master#subdirectory=azureml-custom-module-examples/pytorch-modules",
                     "--extra-index-url=https://azureml-modules:3nvdtawseij7o2oenxojj35c43i5lu2ucf77pugohh4g5eqn6xnq@msdata.pkgs.visualstudio.com/_packaging/azureml-modules%40Local/pypi/simple/"
                 ]
             }
