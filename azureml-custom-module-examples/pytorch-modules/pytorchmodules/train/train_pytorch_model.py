@@ -28,10 +28,13 @@ def entrance(input_model_path='/mnt/chjinche/test_data/detection/init_model',
     # TODO: load from schema in case of different tasks
     ann_type = ImageDirectory.load(train_data_path).get_annotation_type()
     logger.info(f'task type: {ann_type}')
-    transforms = ConvertCocoPolysToMask() if ann_type == ImageAnnotationTypeName.OBJECT_DETECTION else None
-    train_set = ImageDirectory.load(train_data_path).to_torchvision_dataset(transforms=transforms)
+    transforms = ConvertCocoPolysToMask(
+    ) if ann_type == ImageAnnotationTypeName.OBJECT_DETECTION else None
+    train_set = ImageDirectory.load(train_data_path).to_torchvision_dataset(
+        transforms=transforms)
     # logger.info(f"Training classes: {train_set.classes}")
-    valid_set = ImageDirectory.load(valid_data_path).to_torchvision_dataset(transforms=transforms)
+    valid_set = ImageDirectory.load(valid_data_path).to_torchvision_dataset(
+        transforms=transforms)
     # TODO: assert the same classes between train_set and valid_set.
     logger.info("Made dataset")
     # classes = train_set.categories
@@ -47,8 +50,8 @@ def entrance(input_model_path='/mnt/chjinche/test_data/detection/init_model',
     logger.info("Start building model.")
     model_config = load_model_from_directory(input_model_path,
                                              model_loader=pickle_loader).data
-    model_class = getattr(initialize_models, model_config.get('model_class', None),
-                          None)
+    model_class = getattr(initialize_models,
+                          model_config.get('model_class', None), None)
     logger.info(f'Model class: {model_class}.')
     model_config.pop('model_class', None)
     model_config['num_classes'] = num_classes
@@ -67,16 +70,22 @@ def entrance(input_model_path='/mnt/chjinche/test_data/detection/init_model',
     # local_dependencies = [str(Path(__file__).parent.parent)]
     # logger.info(f'Ouput local dependencies {local_dependencies}.')
     conda = {
-        "dependencies": [{
-            "pip": [
-                "azureml-defaults",
-                "azureml-designer-core[image]==0.0.26.post8829093",
-                "fire==0.1.3",
-                "git+https://github.com/microsoft/ComputerVision.git@master#egg=utils_cv",
-                "git+https://github.com/StudioCommunity/CustomModules-1.git@master#subdirectory=azureml-custom-module-examples/pytorch-modules",
-                "--extra-index-url=https://azureml-modules:3nvdtawseij7o2oenxojj35c43i5lu2ucf77pugohh4g5eqn6xnq@msdata.pkgs.visualstudio.com/_packaging/azureml-modules%40Local/pypi/simple/"
-            ]
-        }]
+        "dependencies": [
+            "cython=0.29.14",
+            "numpy=1.16.4", {
+                "pip": [
+                    "azureml-defaults",
+                    "azureml-designer-core[image]==0.0.26.post8829093",
+                    "torch==1.3",
+                    "torchvision==0.4.1",
+                    "fire==0.1.3",
+                    "pycocotools==2.0.0",
+                    "git+https://github.com/microsoft/ComputerVision.git@master#egg=utils_cv",
+                    "git+https://github.com/StudioCommunity/CustomModules-1.git@master#subdirectory=azureml-custom-module-examples/pytorch-modules",
+                    "--extra-index-url=https://azureml-modules:3nvdtawseij7o2oenxojj35c43i5lu2ucf77pugohh4g5eqn6xnq@msdata.pkgs.visualstudio.com/_packaging/azureml-modules%40Local/pypi/simple/"
+                ]
+            }
+        ]
     }
     save_pytorch_state_dict_model(model,
                                   init_params=model_config,
