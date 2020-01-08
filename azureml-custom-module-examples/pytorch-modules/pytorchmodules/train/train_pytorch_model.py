@@ -69,8 +69,12 @@ def entrance(input_model_path='/mnt/chjinche/test_data/detection/init_model',
     # TODO: designer.model could support pathlib.Path
     # local_dependencies = [str(Path(__file__).parent.parent)]
     # logger.info(f'Ouput local dependencies {local_dependencies}.')
+
     conda = {
+        "name": "project_environment",
+        "channels": ["defaults"],
         "dependencies": [
+            "python=3.6.8",
             "cython=0.29.14",
             "numpy=1.16.4", {
                 "pip": [
