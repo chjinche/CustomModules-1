@@ -120,6 +120,7 @@ class BaseNet(nn.Module):
         if torch.cuda.is_available():
             self.model = self.model.cuda()
 
+        logger.info(f'device count: {torch.cuda.device_count()}')
         if torch.cuda.device_count() > 1:
             # self.model = torch.nn.parallel.DistributedDataParallel(self.model).cuda()
             self.model = torch.nn.DataParallel(self.model).cuda()
@@ -134,6 +135,7 @@ class BaseNet(nn.Module):
         logger.info('Start training epochs.')
         best_error = 1
         counter = 0
+        last_epoch_valid_loss = -1
         for epoch in range(epochs):
             _, train_loss, train_error = self.train_one_epoch(
                 loader=train_loader,
@@ -151,7 +153,6 @@ class BaseNet(nn.Module):
                 is_best = False
 
             # Early stop
-            last_epoch_valid_loss = 0
             if epoch == 0:
                 last_epoch_valid_loss = valid_loss
             else:

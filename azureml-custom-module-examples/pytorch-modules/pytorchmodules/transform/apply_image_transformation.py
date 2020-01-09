@@ -10,9 +10,9 @@ class ApplyImageTransformation:
     def __init__(self):
         self.unloader = transforms.ToPILImage()
 
-    def onstart(self, ports={}, params={}):
-        mode = params.get('Mode', None)
-        input_transform_dir = ports.get('Input image transformation', None)
+    def on_init(self, **kwargs):
+        mode = kwargs.get('mode', None)
+        input_transform_dir = kwargs.get('input_image_transformation', None)
         self.transform = self.get_transforms(input_transform_dir, mode)
         logger.info(f'{mode}, transforms {self.transform}.')
 
@@ -33,29 +33,29 @@ class ApplyImageTransformation:
             raise TypeError(f"Unsupported transform_type type {mode}.")
 
     # Follow webservice api contract
-    def apply(self, ports={}, params={}):
-        input_image_dir = ports.get('Input image directory', None)
+    def run(self, **kwargs):
+        input_image_dir = kwargs.get('input_image_directory', None)
         logger.info(f'Applying transform:')
         transformed_dir = input_image_dir.apply_to_images(
             transform=lambda image: self.unloader(
                 self.transform(image).squeeze(0)))
-        return transformed_dir
+        return (transformed_dir, )
 
 
-def entrance(mode,
-             input_transform_path='/mnt/chjinche/test_data/detection/init_transform/',
-             input_image_path='/mnt/chjinche/test_data/detection/image_dir/',
-             output_path='/mnt/chjinche/test_data/detection/transform/'):
-    params = {'Mode': mode}
-    ports = {
-        'Input image transformation':
-        ImageTransformationDirectory.load(input_transform_path),
-        'Input image directory':
-        ImageDirectory.load(input_image_path)
+def entrance(
+        mode,
+        input_transform_path='/mnt/chjinche/test_data/detection/init_transform/',
+        input_image_path='/mnt/chjinche/test_data/detection/image_dir/',
+        output_path='/mnt/chjinche/test_data/detection/transform/'):
+    kwargs = {
+        'mode': mode,
+        'input_image_transformation': ImageTransformationDirectory.load(input_transform_path),
+        'input_image_directory': ImageDirectory.load(input_image_path)
     }
     task = ApplyImageTransformation()
-    task.onstart(ports=ports, params=params)
-    task.apply(ports=ports, params=params).dump(output_path)
+    task.on_init(**kwargs)
+    output_dir, = task.run(**kwargs)
+    output_dir.dump(output_path)
     logger.info("Transformed dir dumped")
 
 

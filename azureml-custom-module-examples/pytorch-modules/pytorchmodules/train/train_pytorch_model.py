@@ -9,19 +9,19 @@ from azureml.studio.core.io.model_directory import load_model_from_directory, pi
 from .. import initialize_models
 from .utils import ConvertCocoPolysToMask
 
-# TODO:Find idle device rather than hard code. Disable parallel training to work around built-in score bug.
-os.environ["CUDA_VISIBLE_DEVICES"] = "1"
-
 
 def entrance(input_model_path='/mnt/chjinche/test_data/detection/init_model',
              train_data_path='/mnt/chjinche/test_data/detection/transform/',
              valid_data_path='/mnt/chjinche/test_data/detection/transform',
              save_model_path='/mnt/chjinche/test_data/detection/saved_model',
+             device_ids='0',
              epochs=1,
              batch_size=32,
              learning_rate=0.001,
              random_seed=231,
              patience=2):
+    # TODO:Find idle device rather than hard code. Disable parallel training to work around built-in score bug.
+    os.environ["CUDA_VISIBLE_DEVICES"] = device_ids
     logger.info("Start training.")
     logger.info(f"data path: {train_data_path}")
     logger.info(f"data path: {valid_data_path}")
