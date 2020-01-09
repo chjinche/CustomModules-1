@@ -10,18 +10,19 @@ from .. import initialize_models
 from .utils import ConvertCocoPolysToMask
 
 
-def entrance(input_model_path='/mnt/chjinche/test_data/detection/init_model',
-             train_data_path='/mnt/chjinche/test_data/detection/transform/',
-             valid_data_path='/mnt/chjinche/test_data/detection/transform',
-             save_model_path='/mnt/chjinche/test_data/detection/saved_model',
-             device_ids='0',
-             epochs=1,
+def entrance(input_model_path='/mnt/chjinche/test_data/big_cls/init_model',
+             train_data_path='/mnt/chjinche/test_data/big_cls/transform_train/',
+             valid_data_path='/mnt/chjinche/test_data/big_cls/transform_test',
+             save_model_path='/mnt/chjinche/test_data/big_cls/saved_model',
+             device_ids="0,",
+             epochs=20,
              batch_size=32,
              learning_rate=0.001,
              random_seed=231,
              patience=2):
     # TODO:Find idle device rather than hard code. Disable parallel training to work around built-in score bug.
-    os.environ["CUDA_VISIBLE_DEVICES"] = device_ids
+    logger.info(f'device ids {device_ids}')
+    os.environ["CUDA_VISIBLE_DEVICES"] = ','.join([str(i) for i in device_ids])
     logger.info("Start training.")
     logger.info(f"data path: {train_data_path}")
     logger.info(f"data path: {valid_data_path}")
@@ -57,6 +58,7 @@ def entrance(input_model_path='/mnt/chjinche/test_data/detection/init_model',
     model_config['num_classes'] = num_classes
     logger.info(f'Model_config: {model_config}.')
     model = model_class(**model_config)
+    logger.info(f"Model init finished, {model}.")
     logger.info("Built model. Start training.")
     model.fit(train_set=train_set,
               valid_set=valid_set,
