@@ -7,6 +7,7 @@ from azureml.studio.core.io.image_directory import ImageDirectory
 def entrance(input_path='/mnt/chjinche/test_data/classification/',
              output_path='/mnt/chjinche/test_data/classification/image_dir/'):
     logger.info('Start!')
+    logger.info(f'input path {input_path}')
     # TODO:Case 1: input path is torchvision ImageFolder
     # loader_dir = FolderBasedImageDirectory.load_organized(input_path)
     # Case 2: input path is compressed file
