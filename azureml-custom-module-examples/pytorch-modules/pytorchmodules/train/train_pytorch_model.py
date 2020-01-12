@@ -1,5 +1,4 @@
 import fire
-import os
 from azureml.designer.model.io import save_pytorch_state_dict_model
 from azureml.designer.model.model_spec.task_type import TaskType
 from azureml.studio.core.io.image_directory import ImageDirectory
@@ -7,22 +6,23 @@ from azureml.studio.core.io.image_schema import ImageAnnotationTypeName
 from azureml.studio.core.logger import logger
 from azureml.studio.core.io.model_directory import load_model_from_directory, pickle_loader
 from .. import initialize_models
-from .utils import ConvertCocoPolysToMask
+from .coco_utils import ConvertCocoPolysToMask
+from . import trainer
 
 
 def entrance(input_model_path='/mnt/chjinche/test_data/big_cls/init_model',
-             train_data_path='/mnt/chjinche/test_data/big_cls/transform_train/',
+             train_data_path='/mnt/chjinche/test_data/big_cls/transform/',
              valid_data_path='/mnt/chjinche/test_data/big_cls/transform_test',
              save_model_path='/mnt/chjinche/test_data/big_cls/saved_model',
-             device_ids="0,",
-             epochs=20,
-             batch_size=32,
+            #  device_ids="0,1",
+             epochs=10,
+             batch_size=128,
              learning_rate=0.001,
              random_seed=231,
-             patience=2):
+             patience=3):
     # TODO:Find idle device rather than hard code. Disable parallel training to work around built-in score bug.
-    logger.info(f'device ids {device_ids}')
-    os.environ["CUDA_VISIBLE_DEVICES"] = ','.join([str(i) for i in device_ids])
+    # logger.info(f'device ids {device_ids}')
+    # os.environ["CUDA_VISIBLE_DEVICES"] = ','.join([str(i) for i in device_ids])
     logger.info("Start training.")
     logger.info(f"data path: {train_data_path}")
     logger.info(f"data path: {valid_data_path}")
@@ -33,7 +33,7 @@ def entrance(input_model_path='/mnt/chjinche/test_data/big_cls/init_model',
     ) if ann_type == ImageAnnotationTypeName.OBJECT_DETECTION else None
     train_set = ImageDirectory.load(train_data_path).to_torchvision_dataset(
         transforms=transforms)
-    # logger.info(f"Training classes: {train_set.classes}")
+    logger.info(f"Training classes: {train_set.classes}")
     valid_set = ImageDirectory.load(valid_data_path).to_torchvision_dataset(
         transforms=transforms)
     # TODO: assert the same classes between train_set and valid_set.
@@ -41,26 +41,25 @@ def entrance(input_model_path='/mnt/chjinche/test_data/big_cls/init_model',
     # classes = train_set.categories
     num_classes = train_set.num_of_classes
     class_to_idx = train_set.class_to_idx
-    # print(classes)
-    # num_classes = len(classes)
-    # num_classes = 91
     # TODO: use image directory api to get id-to-class mapping.
     id_to_class_dict = dict((v, k) for k, v in class_to_idx.items())
-    logger.info(f'{num_classes} classes, {class_to_idx}')
-    # id_to_class_dict = {i: classes[i] for i in range(num_classes)}
     logger.info("Start building model.")
     model_config = load_model_from_directory(input_model_path,
                                              model_loader=pickle_loader).data
     model_class = getattr(initialize_models,
                           model_config.get('model_class', None), None)
+    trainer_class = getattr(trainer, model_config.get('trainer', None), None)
     logger.info(f'Model class: {model_class}.')
     model_config.pop('model_class', None)
+    logger.info(f'Trainer class: {trainer_class}.')
+    model_config.pop('trainer', None)
     model_config['num_classes'] = num_classes
     logger.info(f'Model_config: {model_config}.')
     model = model_class(**model_config)
-    logger.info(f"Model init finished, {model}.")
+    # logger.info(f"Model init finished, {model}.")
     logger.info("Built model. Start training.")
-    model.fit(train_set=train_set,
+    task = trainer_class(model)
+    task.fit(train_set=train_set,
               valid_set=valid_set,
               epochs=epochs,
               batch_size=batch_size,

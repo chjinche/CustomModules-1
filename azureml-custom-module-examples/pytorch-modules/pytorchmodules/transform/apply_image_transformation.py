@@ -38,7 +38,7 @@ class ApplyImageTransformation:
         logger.info(f'Applying transform:')
         transformed_dir = input_image_dir.apply_to_images(
             transform=lambda image: self.unloader(
-                self.transform(image).squeeze(0)))
+                self.transform(image).squeeze(0)).convert("RGB"))
         return (transformed_dir, )
 
 

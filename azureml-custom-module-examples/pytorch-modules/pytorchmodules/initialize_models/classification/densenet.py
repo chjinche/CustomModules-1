@@ -9,13 +9,25 @@ class DenseNet(BaseNet):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.update_nn()
-        logger.info(f"Model init finished, {self.model}.")
 
+    # def update_nn(self):
+    #     if self.pretrained:
+    #         num_classes = self.kwargs.get('num_classes', None)
+    #         num_final_in = self.model.classifier.in_features
+    #         self.model.classifier = nn.Linear(num_final_in, num_classes)
+    # def update_nn(self):
+    #     if self.pretrained:
+    #         num_classes = self.kwargs.get('num_classes', None)
+    #         num_final_out = self.model.classifier.out_features
+    #         self.model.add_module('fc', nn.Linear(num_final_out, num_classes))
     def update_nn(self):
         if self.pretrained:
             num_classes = self.kwargs.get('num_classes', None)
-            num_final_in = self.model.classifier.in_features
-            self.model.classifier = nn.Linear(num_final_in, num_classes)
+            num_final_out = self.model.classifier.out_features
+            self.model2 = nn.Linear(num_final_out, num_classes)
+
+    def forward(self, x):
+        return self.model2(self.model(x)) if self.pretrained else self.model(x)
 
 
 def entrance(save_model_path='/mnt/chjinche/test_data/init_model',
@@ -26,7 +38,8 @@ def entrance(save_model_path='/mnt/chjinche/test_data/init_model',
         'model_class': 'DenseNet',
         'model_type': model_type,
         'pretrained': pretrained,
-        'memory_efficient': memory_efficient
+        'memory_efficient': memory_efficient,
+        'trainer': 'ClassificationTrainer',
     }
     logger.info('Dump untrained model.')
     logger.info(f'Model config: {model_config}.')

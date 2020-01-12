@@ -7,7 +7,7 @@ from azureml.studio.core.io.image_schema import ImageAnnotationTypeName
 
 def get_split_list(ann_type, lst, fraction):
     n = len(lst)
-    if ann_type == ImageAnnotationTypeName.OBJECT_DETECTION:
+    if ann_type in {ImageAnnotationTypeName.OBJECT_DETECTION}:
         train_idx, test_idx = train_test_split(
             list(range(n)), train_size=fraction, random_state=42)
     else:
