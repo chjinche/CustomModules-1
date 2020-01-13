@@ -104,6 +104,7 @@ class ClassificationTrainer:
         best_error = 1
         counter = 0
         last_epoch_valid_loss = -1
+        best_model = None
         for epoch in range(epochs):
             scheduler.step(epoch=epoch)
             _, train_loss, train_error = self.train_one_epoch(
@@ -143,8 +144,11 @@ class ClassificationTrainer:
                     # f'Get better top1 accuracy: {1-best_error:.4f} will saving weights to {best_checkpoint_name}'
                     f'Get better top1 accuracy: {1-best_error:.4f}, best checkpoint will be updated.'
                 )
+                torch.save(self.model.module.state_dict() if torch.cuda.device_count() > 1 else self.model.state_dict(), 'model.pth')
+                best_model = self.model
 
             early_stop = True if counter >= patience else False
             if early_stop:
                 logger.info("Early stopped.")
                 break
+        return best_model

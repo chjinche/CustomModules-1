@@ -22,7 +22,7 @@ def entrance(
         random_grayscale=False,
         random_perspective=False,
         random_erasing=False,
-        normalize=False,
+        # normalize=False,
         output_path='/mnt/chjinche/test_data/detection/init_transform/'):
     # Construct image transform
     # TODO: check transforms ordering
@@ -63,8 +63,8 @@ def entrance(
         img_trans_dir.append('RandomErasing')
     # Need to do 'ToTensor' op ahead of normalization.
     img_trans_dir.append('ToTensor')
-    if normalize:
-        img_trans_dir.append_normalize()
+    # if normalize:
+    #     img_trans_dir.append_normalize()
     logger.info(f'Constructed image transforms: {img_trans_dir.transforms}')
     # Dump
     img_trans_dir.dump(output_path)

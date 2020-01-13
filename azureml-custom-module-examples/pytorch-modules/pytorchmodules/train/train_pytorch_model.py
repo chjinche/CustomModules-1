@@ -1,3 +1,4 @@
+import os
 import fire
 from azureml.designer.model.io import save_pytorch_state_dict_model
 from azureml.designer.model.model_spec.task_type import TaskType
@@ -10,19 +11,22 @@ from .coco_utils import ConvertCocoPolysToMask
 from . import trainer
 
 
-def entrance(input_model_path='/mnt/chjinche/test_data/big_cls/init_model',
-             train_data_path='/mnt/chjinche/test_data/big_cls/transform/',
-             valid_data_path='/mnt/chjinche/test_data/big_cls/transform_test',
-             save_model_path='/mnt/chjinche/test_data/big_cls/saved_model',
-            #  device_ids="0,1",
-             epochs=10,
-             batch_size=128,
-             learning_rate=0.001,
-             random_seed=231,
-             patience=3):
+def entrance(
+        input_model_path='/mnt/chjinche/test_data/big_cls/init_model',
+        train_data_path='/mnt/chjinche/test_data/big_cls/transform/',
+        valid_data_path='/mnt/chjinche/test_data/big_cls/transform_test',
+        save_model_path='/mnt/chjinche/test_data/big_cls/saved_model',
+        #  device_ids="0,1",
+        epochs=2,
+        batch_size=32,
+        learning_rate=0.001,
+        random_seed=231,
+        patience=3):
     # TODO:Find idle device rather than hard code. Disable parallel training to work around built-in score bug.
+    # transforms.Normalize(mean=[0.485, 0.456, 0.406], stdv=[0.229, 0.224, 0.225])
     # logger.info(f'device ids {device_ids}')
     # os.environ["CUDA_VISIBLE_DEVICES"] = ','.join([str(i) for i in device_ids])
+    os.environ["CUDA_VISIBLE_DEVICES"] = '0'
     logger.info("Start training.")
     logger.info(f"data path: {train_data_path}")
     logger.info(f"data path: {valid_data_path}")
@@ -59,31 +63,29 @@ def entrance(input_model_path='/mnt/chjinche/test_data/big_cls/init_model',
     # logger.info(f"Model init finished, {model}.")
     logger.info("Built model. Start training.")
     task = trainer_class(model)
-    task.fit(train_set=train_set,
-              valid_set=valid_set,
-              epochs=epochs,
-              batch_size=batch_size,
-              lr=learning_rate,
-              random_seed=random_seed,
-              patience=patience)
+    best_model = task.fit(train_set=train_set,
+                          valid_set=valid_set,
+                          epochs=epochs,
+                          batch_size=batch_size,
+                          lr=learning_rate,
+                          random_seed=random_seed,
+                          patience=patience)
+
     # Save model file, configs and install dependencies
     # TODO: designer.model could support pathlib.Path
     # local_dependencies = [str(Path(__file__).parent.parent)]
     # logger.info(f'Ouput local dependencies {local_dependencies}.')
 
     conda = {
-        "name": "project_environment",
+        "name":
+        "project_environment",
         "channels": ["defaults"],
         "dependencies": [
-            "python=3.6.8",
-            "cython=0.29.14",
-            "numpy=1.16.4", {
+            "python=3.6.8", "cython=0.29.14", "numpy=1.16.4", {
                 "pip": [
                     "azureml-defaults",
-                    "azureml-designer-core[image]==0.0.26.post8829093",
-                    "torch==1.3",
-                    "torchvision==0.4.1",
-                    "fire==0.1.3",
+                    "azureml-designer-core[image]==0.0.26.post9085592",
+                    "torch==1.3", "torchvision==0.4.1", "fire==0.1.3",
                     "pycocotools==2.0.0",
                     "git+https://github.com/microsoft/ComputerVision.git@master#egg=utils_cv",
                     "git+https://github.com/chjinche/CustomModules-1.git@master#subdirectory=azureml-custom-module-examples/pytorch-modules",
@@ -92,7 +94,7 @@ def entrance(input_model_path='/mnt/chjinche/test_data/big_cls/init_model',
             }
         ]
     }
-    save_pytorch_state_dict_model(model,
+    save_pytorch_state_dict_model(best_model,
                                   init_params=model_config,
                                   path=save_model_path,
                                   task_type=TaskType.MultiClassification,
