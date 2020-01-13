@@ -21,7 +21,7 @@ class ApplyImageTransformation:
     def get_transforms(self, input_transform, mode):
         if mode == 'For training':
             return input_transform.torch_transform
-        if mode == 'For testing':
+        if mode == 'For inference':
             raw_transforms = input_transform.transforms
             test_transforms = [
                 t for t in raw_transforms if not t[0].startswith('Random')
