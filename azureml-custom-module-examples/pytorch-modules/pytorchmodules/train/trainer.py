@@ -144,7 +144,6 @@ class ClassificationTrainer:
                     # f'Get better top1 accuracy: {1-best_error:.4f} will saving weights to {best_checkpoint_name}'
                     f'Get better top1 accuracy: {1-best_error:.4f}, best checkpoint will be updated.'
                 )
-                torch.save(self.model.module.state_dict() if torch.cuda.device_count() > 1 else self.model.state_dict(), 'model.pth')
                 best_model = self.model
 
             early_stop = True if counter >= patience else False

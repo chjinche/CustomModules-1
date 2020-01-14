@@ -1,5 +1,6 @@
 import os
 import fire
+from torchvision import transforms as t
 from azureml.designer.model.io import save_pytorch_state_dict_model
 from azureml.designer.model.model_spec.task_type import TaskType
 from azureml.studio.core.io.image_directory import ImageDirectory
@@ -23,7 +24,6 @@ def entrance(
         random_seed=231,
         patience=3):
     # TODO:Find idle device rather than hard code. Disable parallel training to work around built-in score bug.
-    # transforms.Normalize(mean=[0.485, 0.456, 0.406], stdv=[0.229, 0.224, 0.225])
     # logger.info(f'device ids {device_ids}')
     # os.environ["CUDA_VISIBLE_DEVICES"] = ','.join([str(i) for i in device_ids])
     os.environ["CUDA_VISIBLE_DEVICES"] = '0'
@@ -35,11 +35,17 @@ def entrance(
     logger.info(f'task type: {ann_type}')
     transforms = ConvertCocoPolysToMask(
     ) if ann_type == ImageAnnotationTypeName.OBJECT_DETECTION else None
+    transform = t.Compose([
+        t.ToTensor(),
+        # t.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        t.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+    ])
+    # transform = None
     train_set = ImageDirectory.load(train_data_path).to_torchvision_dataset(
-        transforms=transforms)
+        transform=transform, transforms=transforms)
     logger.info(f"Training classes: {train_set.classes}")
     valid_set = ImageDirectory.load(valid_data_path).to_torchvision_dataset(
-        transforms=transforms)
+        transform=transform, transforms=transforms)
     # TODO: assert the same classes between train_set and valid_set.
     logger.info("Made dataset")
     # classes = train_set.categories
